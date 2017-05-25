@@ -1,0 +1,31 @@
+https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation
+
+
+
+http://willleahy.info/ng-maps/#/examples
+
+https://developers.google.com/fusiontables/docs/samples/fusiontableslayer_example
+
+
+
+sop fusion maps
+
+1AwW4FXuvCnsTtt_wFkBsPXXJ-JAVYtyOGbuM6z6S
+
+
+https://developers.google.com/fusiontables/docs/v2/getting_started
+
+
+https://developers.google.com/fusiontables/docs/v2/sql-reference#insertRow
+
+https://cdn.rawgit.com/fusiontables/fusion-tables-api-samples/master/FusionTablesLayerWizard/src/index.html
+
+map
+https://fusiontables.google.com/data?docid=1LnI2Od1Ki2mcw6uaDSwMeJQ-J7SDg-8YR0kiCIG2#map:id=3
+
+https://github.com/mjhea0/node-postgres-promises
+
+http://mherman.org/blog/2015/02/12/postgresql-and-nodejs/#.WSY_3BMrJhE
+
+fusion table
+https://fusiontables.google.com/data?docid=1LnI2Od1Ki2mcw6uaDSwMeJQ-J7SDg-8YR0kiCIG2#map:id=3
