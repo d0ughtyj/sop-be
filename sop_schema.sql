@@ -40,8 +40,8 @@
 
 INSERT INTO users (username, password, email, full_name, full_address, street, city, state, zip,
 zone,pin, lat, long, notes)
-  VALUES ('jimbo2', '12345678', 'jimbo1@mail.com', 'jimbo', '2445 Virgo Drive, Colorado Springs,
+  VALUES ('jimbo5', '12345678', 'jimbo1@mail.com', 'jimbo', '2445 Virgo Drive, Colorado Springs,
     CO', 'Virgo Dr', 'Colorado Springs','CO', '80906',2,1234, 38, -104, 'tbd');
 
 INSERT INTO pickups (user_id, type, date_entered, date_for_pickup, status, zone, year, juilian_day_number, notes)
-    VALUES (2, 'Grass', '2017-05-24', '2017-06-12', 'planned', 2, 2017, 180, 'tbd');
+    VALUES (5, 'Grass', '2017-05-24', '2017-06-12', 'planned', 2, 2017, 180, 'tbd');
