@@ -1,42 +1,45 @@
 -- psql -U jamesdoughty -f sop_schema.sql
 
--- DROP DATABASE IF EXISTS sop;
--- CREATE DATABASE sop;
+
+-- heroku addons:create heroku-postgresql:sop-dev
+
+DROP DATABASE IF EXISTS sop;
+CREATE DATABASE sop;
 
 \c sop;
 
 
 
--- CREATE TABLE users (
---   ID SERIAL PRIMARY KEY,
---   username VARCHAR NOT NULL UNIQUE,
---   password VARCHAR,
---   email VARCHAR,
---   full_name VARCHAR,
---   full_address VARCHAR,
---   street VARCHAR,
---   city VARCHAR,
---   state VARCHAR,
---   zip VARCHAR,
---   zone INTEGER,
---   pin INTEGER,
---   lat BIGINT,
---   long BIGINT,
---   notes VARCHAR
--- );
+CREATE TABLE users (
+  ID SERIAL PRIMARY KEY,
+  username VARCHAR NOT NULL UNIQUE,
+  password VARCHAR,
+  email VARCHAR,
+  full_name VARCHAR,
+  full_address VARCHAR,
+  street VARCHAR,
+  city VARCHAR,
+  state VARCHAR,
+  zip VARCHAR,
+  zone INTEGER,
+  pin INTEGER,
+  lat BIGINT,
+  long BIGINT,
+  notes VARCHAR
+);
 
--- CREATE TABLE pickups (
---   ID SERIAL PRIMARY KEY,
---   user_id INTEGER,
---   type VARCHAR,
---   date_entered DATE,
---   date_for_pickup DATE,
---   status VARCHAR,
---   zone INTEGER,
---   year INTEGER,
---   juilian_day_number INTEGER,
---   notes VARCHAR
--- );
+CREATE TABLE pickups (
+  ID SERIAL PRIMARY KEY,
+  user_id INTEGER,
+  type VARCHAR,
+  date_entered DATE,
+  date_for_pickup DATE,
+  status VARCHAR,
+  zone INTEGER,
+  year INTEGER,
+  juilian_day_number INTEGER,
+  notes VARCHAR
+);
 
 INSERT INTO users (username, password, email, full_name, full_address, street, city, state, zip,
 zone,pin, lat, long, notes)
