@@ -3,14 +3,14 @@ var express = require('express'),
   app = express();
 
 var pgp = require('pg-promise')();
-var cors = require('cors');
-
-var corsOptions = {
-  origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,OPTIONS,DELETE',
-  preflightContinue: false,
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
+// var cors = require('cors');
+//
+// var corsOptions = {
+//   origin: '*',
+//   methods: 'GET,HEAD,PUT,PATCH,POST,OPTIONS,DELETE',
+//   preflightContinue: false,
+//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// };
 
 /* -------------------------------------------------------------------------- */
 var path = require('path');

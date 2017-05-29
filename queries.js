@@ -1,3 +1,5 @@
+//http://vitaly-t.github.io/pg-promise/QueryFile.html
+
 var promise = require('bluebird');
 
 var options = {
@@ -21,11 +23,7 @@ var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/so
 var db = pgp(connectionString);
 
 
-// {
-//   status: 'success',
-//   data: data,
-//   message: 'Retrieved ONE User'
-// }
+
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function loginUser(req, res) {
   var userPin = parseInt(req.body.pin);
@@ -43,18 +41,10 @@ function loginUser(req, res) {
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
-// {
-//   status: 'success',
-//   data: data,
-//   message: 'Retrieved ALL Users'
-// }
-
-
-
-
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function getAllUsers(req, res, next) {
-  db.any('select * from users')
+  console.log('get user list from be');
+  db.any('SELECT * from users')
     .then(function (data) {
       // res.status(200)
         res.json(data);
@@ -64,12 +54,9 @@ function getAllUsers(req, res, next) {
     });
 }
 
-// status: 'success',
-// data: data,
-// message: 'Retrieved ALL Pickups'
 // ppppppppppppppppppppppppppppppppppppppppppppppppppppppp//
 function getAllPickups(req, res, next) {
-  db.any('select * from pickups')
+  db.any('SELECT * from pickups')
     .then(function (data) {
       // res.status(200)
         res.json(data);
@@ -158,13 +145,13 @@ function createPickup2(req, res, next) {
 }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function createPickup(req, res, next) {
-  console.log('create pick req.body ',req.body);
+  // console.log('create pick req.body ',req.body);
   var obj = {
     user_id: parseInt(req.body.user_id),
     type: reg.body.type,
     notes: reg.body.notes
   };
-  console.log('obj ', obj);
+  // console.log('obj ', obj);
 db.none('INSERT INTO pickups(user_id, type, notes) VALUES(${user_id}, ${type}, ${notes})', obj)
     .then(function() {
         // success;
@@ -184,9 +171,10 @@ db.none('INSERT INTO pickups(user_id, type, notes) VALUES(${user_id}, ${type}, $
 function createUser(req, res, next) {
   var obj ={
     username: req.body.username,
-    pin: parseInt(req.body.pin)
+    pin: parseInt(req.body.pin),
+    full_name: req.body.full_name
   };
-db.none('INSERT INTO users(username, pin) VALUES(${username}, ${pin})', obj)
+db.none('INSERT INTO users(username, pin, full_name) VALUES(${username}, ${pin}, ${full_name})', obj)
     .then(function() {
       res.status(200)
         .json({
