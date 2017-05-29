@@ -18,7 +18,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var pug = require('pug');
+// var pug = require('pug');
 var routes = require('./routes/index');
 /* -------------------------------------------------------------------------- */
 // view engine setup
@@ -50,7 +50,7 @@ if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status( err.code || 500 )
     .json({
-      status: 'error development (app.js 79)',
+      status: 'error development (app.js 53)',
       message: err
     });
   });
@@ -62,7 +62,7 @@ if (app.get('env') === 'development') {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500)
   .json({
-    status: 'error production (app.js 92)',
+    status: 'error production (app.js 65)',
     message: err.message
   });
 });

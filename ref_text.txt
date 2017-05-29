@@ -1,3 +1,11 @@
+
+
+$ curl --data "username=Whisky&pin=1234" \ http://127.0.0.1:3000/api/user
+
+curl -X PUT --data "username=Hunter&pin=1234" \
+http://127.0.0.1:3000/api/user/1
+
+
 https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation
 
 

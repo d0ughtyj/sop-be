@@ -1,9 +1,40 @@
 var promise = require('bluebird');
-
 var options = {
-  // Initialization Options
-  promiseLib: promise
+    // global event notification;
+    error: (error, e) => {
+        if (e.cn) {
+            // A connection-related error;
+            //
+            // Connections are reported back with the password hashed,
+            // for safe errors logging, without exposing passwords.
+            console.log("CN:", e.cn);
+            console.log("EVENT:", error.message || error);
+        }
+    }
 };
+
+var pgp = require("pg-promise")(options);
+
+// var pgp = require('pg-promise')({
+//     promiseLib: promise
+// });
+
+// var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/sop';
+var connectionString = 'postgres://localhost:5432/sop';
+
+var db = pgp(connectionString);
+db.connect()
+    .then(obj => {
+        obj.done(); // success, release the connection;
+    })
+    .catch(error => {
+        console.log("ERROR:", error.message || error);
+    });
+
+// var options = {
+//   // Initialization Options
+//   promiseLib: promise
+// };
 
 
 //
@@ -16,29 +47,25 @@ var options = {
 //     password: 'user-password'
 // };
 
-var pgp = require('pg-promise')(options);
-var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/sop';
-var db = pgp(connectionString);
-
-
+// var pgp = require('pg-promise')(options);
 // {
 //   status: 'success',
 //   data: data,
 //   message: 'Retrieved ONE User'
 // }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-function loginUser(req, res) {
-  var userPin = parseInt(req.body.pin);
-  var userName = reg.body.username;
-  db.one('select * from users where username = $1 AND pin = $2', userName, userPin)
-    .then(function (data) {
-      res.status(200)
-        .json(data);
-    })
-    .catch(function (err) {
-      return next('Login Error ', err);
-    });
-}
+// function loginUser(req, res) {
+//   var userPin = parseInt(req.body.pin);
+//   var userName = reg.body.username;
+//   db.one('select * from users where username = $1 AND pin = $2', userName, userPin)
+//     .then(function (data) {
+//       res.status(200)
+//         .json(data);
+//     })
+//     .catch(function (err) {
+//       return next('Login Error ', err);
+//     });
+// }
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
@@ -135,27 +162,6 @@ function getSingleUser(req, res, next) {
 
 // ******************************************** //
 
-
-function createPickup2(req, res, next) {
-  req.body.user_id = parseInt(req.body.user_id);
-  req.body.zone = parseInt(req.body.zone);
-  req.body.julian_day_number = parseInt(req.body.julian_day_number);
-  req.body.year = parseInt(req.body.year);
-
-  db.none('insert into pickup(user_id, type, date_entered, date_for_pickup, status, company, zone, julian_day_number, notes, year)' +
-      'values(${user_id}, ${type}, ${date_entered}, ${date_for_pickup}, ${status}, ${company}, ${zone}, ${julian_day_number},${notes},${year})',
-    req.body)
-    .then(function () {
-      res.status(200)
-        .json({
-          status: 'success',
-          message: 'Inserted one Pickup Request'
-        });
-    })
-    .catch(function (err) {
-      return next(err);
-    });
-}
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function createPickup(req, res, next) {
   console.log('create pick req.body ',req.body);
@@ -184,9 +190,22 @@ db.none('INSERT INTO pickups(user_id, type, notes) VALUES(${user_id}, ${type}, $
 function createUser(req, res, next) {
   var obj ={
     username: req.body.username,
-    pin: parseInt(req.body.pin)
+    password: req.body.password,
+    email: req.body.email,
+    full_name:  req.body.full_name,
+    full_address:  req.body.full_address,
+    street: req.body.street,
+    city: req.body.city,
+    state: req.body.state,
+    zip: req.body.zip,
+    zone: parseInt(req.body.zone),
+    pin: parseInt(req.body.pin),
+    lat: parseInt(req.body.lat),
+    long: parseInt(req.body.long),
+    notes: req.body.notes
   };
-db.none('INSERT INTO users(username, pin) VALUES(${username}, ${pin})', obj)
+  db.none('INSERT INTO users(username, password, email, full_name, full_address, street, city, state, zip, zone, pin, lat, long, notes)' +
+         'values(${username}, ${password}, ${email}, ${full_name}, ${full_address}, ${street}, ${city}, ${state},${zip},${zone},${pin},${lat},${long},${notes})',obj)
     .then(function() {
       res.status(200)
         .json({
@@ -232,12 +251,24 @@ db.none('INSERT INTO users(username, pin) VALUES(${username}, ${pin})', obj)
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
 function updateUser(req, res, next) {
-  db.none('update users set username=$1, password=$2, email=$3, pin=$4, full_name=$5, street=$6, city=$7, state=$8, zone=$9, zip=$10, lat=$11, lat=$12, notes=$13  where id=$14',
-    [req.body.username, req.body.password, req.body.email, parseInt(req.body.pin),
-      reg.body.full_name,reg.body.street,
-      reg.body.city,reg.body.state,reg.body.zone,reg.body.zip,
-      parseInt(req.body.lat),parseInt(req.body.long),reg.body.notes,
-       parseInt(req.params.id)])
+  userID = parseInt(req.body.id);
+  var obj ={
+    username: req.body.username,
+    password: req.body.password,
+    email: req.body.email,
+    pin: parseInt(req.body.pin),
+    full_name:  req.body.full_name,
+    full_address:  req.body.full_address,
+    street: req.body.street,
+    city: req.body.city,
+    state: req.body.state,
+    zip: req.body.zip,
+    zone: parseInt(req.body.zone),
+    lat: parseInt(req.body.lat),
+    long: parseInt(req.body.long),
+    notes: req.body.notes
+  };
+  db.none('update users set username=$1, password=$2, email=$3, pin=$4, full_name=$5, full_address=$6, street=$7, city=$8, state=$9, zip=$10, zone=$11, lat=$12, lat=$13, notes=$14  where id=$15', obj, userID)
     .then(function () {
       res.status(200)
         .json(data);
@@ -247,7 +278,6 @@ function updateUser(req, res, next) {
     });
 }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-
 function updatePickup(req, res, next) {
   db.none('update pickups set user_id=$1, type=$2, date_entered=$3, date_for_pickup=$4, status=$5,company=$6, parseInt(req.body.zone)=$7,parseInt(julian_day_number=$8,year=$8,notes=$9,where id=$10',
     [parseInt(req.body.user_id),req.body.type, req.body.date_entered,reg.body.date_for_pickup,reg.body.status,reg.body.company, parseInt(req.body.zone),parseInt(req.body.julian_day_number),
@@ -305,7 +335,7 @@ function removePickup(req, res, next) {
 
 module.exports = {
   getUserByUsername: getUserByUsername,
-  loginUser: loginUser,
+  // loginUser: loginUser,
   getAllUsers: getAllUsers,
   getSingleUser: getSingleUser,
   createUser: createUser,
