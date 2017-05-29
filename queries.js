@@ -1,31 +1,55 @@
 var promise = require('bluebird');
-var cors = require('cors');
 
 var options = {
   // Initialization Options
   promiseLib: promise
 };
 
-// const cn                =  process.env.DATABASE_URL || {
-//   host    : process.env.HOST,
-//   port    : process.env.PORT,
-//   database: 'todos',
-//   user    : process.env.USER,
-//   password: process.env.DB_PASSWORD
-// }
+
 //
 // const db                = pgp(cn)
-
+// var cn = {
+//     host: 'localhost',
+//     port: 5432,
+//     database: 'my-database-name',
+//     user: 'user-name',
+//     password: 'user-password'
+// };
 
 var pgp = require('pg-promise')(options);
 var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/sop';
 var db = pgp(connectionString);
+
+
+// {
+//   status: 'success',
+//   data: data,
+//   message: 'Retrieved ONE User'
+// }
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+function loginUser(req, res) {
+  var userPin = parseInt(req.body.pin);
+  var userName = reg.body.username;
+  db.one('select * from users where username = $1 AND pin = $2', userName, userPin)
+    .then(function (data) {
+      res.status(200)
+        .json(data);
+    })
+    .catch(function (err) {
+      return next('Login Error ', err);
+    });
+}
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
 // {
 //   status: 'success',
 //   data: data,
 //   message: 'Retrieved ALL Users'
 // }
+
+
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
@@ -75,6 +99,19 @@ function getSinglePickup(req, res, next) {
 }
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+function getUserByUsername(req, res, next) {
+  var username = req.params.username;
+  db.one('select * from users where id = $1', username)
+    .then(function (data) {
+      res.status(200)
+        .json(data);
+    })
+    .catch(function (err) {
+      return next(err);
+    });
+}
+
+
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
 function getSingleUser(req, res, next) {
@@ -93,9 +130,13 @@ function getSingleUser(req, res, next) {
     });
 }
 
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+// ******************************************** //
 
-function createPickup(req, res, next) {
+
+// ******************************************** //
+
+
+function createPickup2(req, res, next) {
   req.body.user_id = parseInt(req.body.user_id);
   req.body.zone = parseInt(req.body.zone);
   req.body.julian_day_number = parseInt(req.body.julian_day_number);
@@ -116,30 +157,78 @@ function createPickup(req, res, next) {
     });
 }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+function createPickup(req, res, next) {
+  console.log('create pick req.body ',req.body);
+  var obj = {
+    user_id: parseInt(req.body.user_id),
+    type: reg.body.type,
+    notes: reg.body.notes
+  };
+  console.log('obj ', obj);
+db.none('INSERT INTO pickups(user_id, type, notes) VALUES(${user_id}, ${type}, ${notes})', obj)
+    .then(function() {
+        // success;
+        res.status(200)
+          .json({
+          status: 'success',
+          message: 'inserted one pickup record'
+        });
+    })
+    .catch(function (error) {
+        // error;
+        return next('create pickup error ', error);
+    });
+}
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+function createUser(req, res, next) {
+  var obj ={
+    username: req.body.username,
+    pin: parseInt(req.body.pin)
+  };
+db.none('INSERT INTO users(username, pin) VALUES(${username}, ${pin})', obj)
+    .then(function() {
+      res.status(200)
+        .json({
+        status: 'success',
+        message: 'inserted one user record'
+      });
+    })
+    .catch(function (error) {
+        // error;
+        return next('create user error',error);
+    });
+  }
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
-function createUser(req, res, next) {
-  req.body.pin = parseInt(req.body.pin);
-  req.body.zone = parseInt(req.body.zone);
-  req.body.lat = parseInt(req.body.lat);
-  req.body.long = parseInt(req.body.long);
-
-  db.none('insert into users(username, password, email, full_name, full_address, street, city, state, zip, zone, pin, lat, long, notes)' +
-      'values(${username}, ${password}, ${email}, ${full_name}, ${full_address}, ${street}, ${city}, ${state},${zip},${zone},${pin},${lat},${long},${notes})',
-    req.body)
-    .then(function () {
-      res.status(200)
-        .json({
-          status: 'success',
-          message: 'Inserted one user'
-        });
-    })
-    .catch(function (err) {
-      return next(err);
-    });
-}
+// function createUser2(req, res, next) {
+//   const username = req.body.username;
+//   const password = req.body.password;
+//   const email = req.body.email;
+//   const full_name = req.body.full_name;
+//   const full_address = req.body.full_address;
+//   const street = req.body.street;
+//   const city = req.body.city;
+//   const state = req.body.state;
+//   const zip = req.body.zip;
+//   const zone = parseInt(req.body.zone);
+//   const pin = parseInt(req.body.pin);
+//   const lat = parseInt(req.body.lat);
+//   const long = parseInt(req.body.long);
+//   const notes = parseInt(req.body.notes);
+//
+//   db.none('insert into users(username, password, email, full_name, full_address, street, city, state, zip, zone, pin, lat, long, notes)' +
+//       'values(${username}, ${password}, ${email}, ${full_name}, ${full_address}, ${street}, ${city}, ${state},${zip},${zone},${pin},${lat},${long},${notes})',
+//     {username, password, email, full_name, full_address, street, city, state,zip,zone,pin,lat,long,notes})
+//     .then(function () {
+//       res.status(201)
+//         .json(data);
+//     })
+//     .catch(function (err) {
+//       return next(err);
+//     });
+// }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
 function updateUser(req, res, next) {
@@ -151,10 +240,7 @@ function updateUser(req, res, next) {
        parseInt(req.params.id)])
     .then(function () {
       res.status(200)
-        .json({
-          status: 'success',
-          message: 'Updated User'
-        });
+        .json(data);
     })
     .catch(function (err) {
       return next(err);
@@ -168,10 +254,7 @@ function updatePickup(req, res, next) {
       parseInt(req.body.year), req.body.notes,parseInt(req.params.id)])
     .then(function () {
       res.status(200)
-        .json({
-          status: 'success',
-          message: 'Updated Pickup'
-        });
+        .json(data);
     })
     .catch(function (err) {
       return next(err);
@@ -182,6 +265,7 @@ function updatePickup(req, res, next) {
 // *********************************************************//
 function removeUser(req, res, next) {
   var userID = parseInt(req.params.id);
+  console.log('req.params.id ', req.params.id);
   db.result('delete from users where id = $1', userID)
     .then(function (result) {
       /* jshint ignore:start */
@@ -220,6 +304,8 @@ function removePickup(req, res, next) {
 
 
 module.exports = {
+  getUserByUsername: getUserByUsername,
+  loginUser: loginUser,
   getAllUsers: getAllUsers,
   getSingleUser: getSingleUser,
   createUser: createUser,
