@@ -3,14 +3,6 @@ var express = require('express'),
   app = express();
 
 var pgp = require('pg-promise')();
-// var cors = require('cors');
-//
-// var corsOptions = {
-//   origin: '*',
-//   methods: 'GET,HEAD,PUT,PATCH,POST,OPTIONS,DELETE',
-//   preflightContinue: false,
-//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-// };
 
 /* -------------------------------------------------------------------------- */
 var path = require('path');
@@ -25,8 +17,7 @@ var routes = require('./routes/index');
 app.set('views', path.join(__dirname, 'public/views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

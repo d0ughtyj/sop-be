@@ -20,28 +20,20 @@ router.use(cors(corsOptions));
 
 router.options('*', cors(corsOptions)); // include before other routes
 
-router.get('/login2/:username',db.getUserByUsername);
-router.post('/login',db.loginUser);
-
 router.get('/api/users',db.getAllUsers);
+router.get('/api/pickups',db.getAllPickups);
+
 router.get('/api/user/:id',db.getSingleUser);
+router.get('/api/pickup/:id',db.getSinglePickup);
+
 router.post('/api/user',db.createUser);
-// router.post('/api/user2', cors(),db.createUser2);
+router.post('/api/pickup',db.createPickup);
 
 router.put('/api/user/:id',db.updateUser);
-router.delete('/api/user/:id',db.removeUser);
-
-router.get('/api/pickups',db.getAllPickups);
-router.get('/api/pickup/:id',db.getSinglePickup);
-router.post('/api/pickup',db.createPickup);
 router.put('/api/pickup/:id',db.updatePickup);
+
+router.delete('/api/user/:id',db.removeUser);
 router.delete('/api/pickup/:id',db.removePickup);
 
-
-// application -------------------------------------------------------------
-// router.get('/', cors(), function (req, res) {
-//     res.render('index', {title: 'node-postgres-promises'});
-//     // load the single view file (angular will handle the page changes on the front-end)
-// });
 
 module.exports = router;

@@ -21,22 +21,8 @@ var options = {
 var pgp = require('pg-promise')(options);
 var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/sop';
 var db = pgp(connectionString);
+console.log('(queries.js -- connection string ', connectionString);
 
-
-
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-function loginUser(req, res) {
-  var userPin = parseInt(req.body.pin);
-  var userName = reg.body.username;
-  db.one('select * from users where username = $1 AND pin = $2', userName, userPin)
-    .then(function (data) {
-      res.status(200)
-        .json(data);
-    })
-    .catch(function (err) {
-      return next('Login Error ', err);
-    });
-}
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
@@ -67,12 +53,6 @@ function getAllPickups(req, res, next) {
 }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
-// {
-//   status: 'success',
-//   data: data,
-//   message: 'Retrieved ONE Pickup'
-// }
-
 function getSinglePickup(req, res, next) {
   var userID = parseInt(req.params.id);
   db.one('select * from pickups where id = $1', userID)
@@ -88,7 +68,7 @@ function getSinglePickup(req, res, next) {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function getUserByUsername(req, res, next) {
   var username = req.params.username;
-  db.one('select * from users where id = $1', username)
+  db.one('select * from users where usdername = $1', username)
     .then(function (data) {
       res.status(200)
         .json(data);
@@ -97,7 +77,6 @@ function getUserByUsername(req, res, next) {
       return next(err);
     });
 }
-
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
@@ -121,53 +100,36 @@ function getSingleUser(req, res, next) {
 
 
 // ******************************************** //
-
-
-function createPickup2(req, res, next) {
-  req.body.user_id = parseInt(req.body.user_id);
-  req.body.zone = parseInt(req.body.zone);
-  req.body.julian_day_number = parseInt(req.body.julian_day_number);
-  req.body.year = parseInt(req.body.year);
-
-  db.none('insert into pickup(user_id, type, date_entered, date_for_pickup, status, company, zone, julian_day_number, notes, year)' +
-      'values(${user_id}, ${type}, ${date_entered}, ${date_for_pickup}, ${status}, ${company}, ${zone}, ${julian_day_number},${notes},${year})',
-    req.body)
-    .then(function () {
-      res.status(200)
-        .json({
-          status: 'success',
-          message: 'Inserted one Pickup Request'
-        });
-    })
-    .catch(function (err) {
-      return next(err);
-    });
-}
+// function createPickup(req, res, next) {
+//   console.log('create pick req.body ',req.body);
+// db.none('INSERT INTO pickups(user_id, type, notes) VALUES($1, $2, $3)', parseInt(req.body.user_id), req.body.type, req.body.notes)
+//     .then(function() {
+//         res.status(200)
+//           .json({
+//           status: 'success',
+//           message: 'inserted one pickup record'
+//         });
+//     })
+//     .catch(function (error) {
+//         // error;
+//         return next('create pickup error ', error);
+//     });
+// }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function createPickup(req, res, next) {
-  // console.log('create pick req.body ',req.body);
-  var obj = {
-    user_id: parseInt(req.body.user_id),
-    type: reg.body.type,
-    notes: reg.body.notes
-  };
-  // console.log('obj ', obj);
-db.none('INSERT INTO pickups(user_id, type, notes) VALUES(${user_id}, ${type}, ${notes})', obj)
-    .then(function() {
-        // success;
-        res.status(200)
-          .json({
-          status: 'success',
-          message: 'inserted one pickup record'
-        });
-    })
-    .catch(function (error) {
-        // error;
-        return next('create pickup error ', error);
-    });
-}
+  console.log('create pick req.body ',req.body);
+  db.any('INSERT INTO pickups(user_id, type, notes) VALUES($1, $2, $3) RETURNING id', [parseInt(req.body.user_id), req.body.type, req.body.notes])
+      .then(data => {
+        console.log('retrun data id', data);
 
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+      })
+      .catch(error => {
+          console.log('(126) ERROR:', error); // print error;
+      });
+  }
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function createUser(req, res, next) {
   var obj ={
     username: req.body.username,
@@ -260,7 +222,7 @@ function removeUser(req, res, next) {
       res.status(200)
         .json({
           status: 'success',
-          message: `Removed ${result.rowCount} user`
+          message: 'Removed ${result.rowCount} user'
         });
       /* jshint ignore:end */
       // look at running function to delete user events
@@ -273,35 +235,30 @@ function removeUser(req, res, next) {
 // *********************************************************//
 function removePickup(req, res, next) {
   var pickupID = parseInt(req.params.id);
-  db.result('delete from users where id = $1', pickupID)
+  console.log('delete pickup req.params.id ', req.params.id);
+  db.result('delete from pickups where id = $1', pickupID)
     .then(function (result) {
-      /* jshint ignore:start */
       res.status(200)
         .json({
           status: 'success',
-          message: `Removed ${result.rowCount} pickup`
+          message: 'Removed ${result.rowCount} pickup'
         });
-      /* jshint ignore:end */
-      // look at running function to delete user events
     })
     .catch(function (err) {
       return next(err);
     });
 }
 // *********************************************************//
-
-
 module.exports = {
   getUserByUsername: getUserByUsername,
-  loginUser: loginUser,
   getAllUsers: getAllUsers,
   getSingleUser: getSingleUser,
+  getSinglePickup: getSinglePickup,
   createUser: createUser,
+  createPickup: createPickup,
+  getAllPickups: getAllPickups,
+  updatePickup: updatePickup,
   updateUser: updateUser,
   removeUser: removeUser,
-  getAllPickups: getAllPickups,
-  getSinglePickup: getSinglePickup,
-  createPickup: createPickup,
-  updatePickup: updatePickup,
   removePickup: removePickup
 };

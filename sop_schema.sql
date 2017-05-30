@@ -25,7 +25,8 @@ CREATE TABLE users (
   pin INTEGER,
   lat BIGINT,
   long BIGINT,
-  notes VARCHAR
+  notes VARCHAR,
+  is_admin BOOLEAN DEFAULT false
 );
 
 CREATE TABLE pickups (
@@ -39,6 +40,16 @@ CREATE TABLE pickups (
   year INTEGER,
   juilian_day_number INTEGER,
   notes VARCHAR
+);
+
+CREATE TABLE pickup_dates (
+  ID SERIAL PRIMARY KEY,
+  company VARCHAR,
+  zone INTEGER,
+  zip VARCHAR,
+  date_for_pickup DATE,
+  year INTEGER,
+  juilian_day_number INTEGER
 );
 
 INSERT INTO users (username, password, email, full_name, full_address, street, city, state, zip,
