@@ -39,10 +39,11 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    res.status( err.code || 500 )
+    res.status( err.code || 999 )
     .json({
-      status: 'error development (app.js 79)',
+      status: 'error development (app.js 44)',
       message: err
+    
     });
   });
 }
@@ -53,7 +54,7 @@ if (app.get('env') === 'development') {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500)
   .json({
-    status: 'error production (app.js 92)',
+    status: 'error production (app.js 56)',
     message: err.message
   });
 });

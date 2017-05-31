@@ -120,8 +120,13 @@ function createPickup(req, res, next) {
   console.log('create pick req.body ',req.body);
   db.any('INSERT INTO pickups(user_id, type, notes) VALUES($1, $2, $3) RETURNING id', [parseInt(req.body.user_id), req.body.type, req.body.notes])
       .then(data => {
-        console.log('retrun data id', data);
-
+        console.log('return data id', data);
+        res.status(200)
+          .json({
+          status: 'success',
+          message: 'inserted one user record'
+        });
+        // added 124 - 127 for response
       })
       .catch(error => {
           console.log('(126) ERROR:', error); // print error;
@@ -182,18 +187,28 @@ db.none('INSERT INTO users(username, pin, full_name) VALUES(${username}, ${pin},
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
 function updateUser(req, res, next) {
-  db.none('update users set username=$1, password=$2, email=$3, pin=$4, full_name=$5, street=$6, city=$7, state=$8, zone=$9, zip=$10, lat=$11, lat=$12, notes=$13  where id=$14',
-    [req.body.username, req.body.password, req.body.email, parseInt(req.body.pin),
-      reg.body.full_name,reg.body.street,
-      reg.body.city,reg.body.state,reg.body.zone,reg.body.zip,
-      parseInt(req.body.lat),parseInt(req.body.long),reg.body.notes,
-       parseInt(req.params.id)])
-    .then(function () {
+  console.log('updateUser ', req.body, req.params.id);
+  db.one('UPDATE users SET username=$1, email=$2, pin=$3, full_name=$4, full_address=$5, street=$6, city=$7, state=$8, zone=$9, zip=$10, notes=$11  WHERE id=$12',
+    [
+      req.body.username,
+      req.body.email,
+      parseInt(req.body.pin),
+      req.body.full_name,
+      req.body.full_address,
+      req.body.street,
+      req.body.city,
+      req.body.state,
+      parseInt(reg.body.zone),
+      req.body.zip,
+      req.body.notes,
+      parseInt(req.params.id)
+    ])
+    .then((data) => {
       res.status(200)
         .json(data);
     })
-    .catch(function (err) {
-      return next(err);
+    .catch((error) => {
+      return next(error);
     });
 }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
