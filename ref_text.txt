@@ -1,3 +1,5 @@
+https://npm.taobao.org/package/pg-promise#queries-and-parameters
+
 https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/Using_geolocation
 
 
@@ -6,7 +8,7 @@ http://willleahy.info/ng-maps/#/examples
 
 https://developers.google.com/fusiontables/docs/samples/fusiontableslayer_example
 
-
+SOP - Save Our Planet (yard waste pickup)
 
 sop fusion maps
 

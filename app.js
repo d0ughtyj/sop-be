@@ -29,7 +29,7 @@ app.use('/', routes);
 /* -------------------------------------------------------------------------- */
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found (66)');
+  var err = new Error('Not Found (32)');
   err.status = 404;
   next(err);
 });
@@ -39,11 +39,12 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    res.status( err.code || 999 )
+    console.log('app.js' , err);
+    res.status( err.code || 998 ) // was 500
     .json({
       status: 'error development (app.js 44)',
       message: err
-    
+
     });
   });
 }
@@ -52,7 +53,8 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500)
+  console.log('app.js' , err);
+  res.status(err.status || 999) //was 500
   .json({
     status: 'error production (app.js 56)',
     message: err.message

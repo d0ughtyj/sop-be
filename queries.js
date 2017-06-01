@@ -1,5 +1,4 @@
 //http://vitaly-t.github.io/pg-promise/QueryFile.html
-
 var promise = require('bluebird');
 
 var options = {
@@ -17,8 +16,11 @@ var options = {
 //     user: 'user-name',
 //     password: 'user-password'
 // };
+// https://npm.taobao.org/package/pg-promise#queries-and-parameters
 
 var pgp = require('pg-promise')(options);
+
+
 var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/sop';
 var db = pgp(connectionString);
 console.log('(queries.js -- connection string ', connectionString);
@@ -118,7 +120,7 @@ function getSingleUser(req, res, next) {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function createPickup(req, res, next) {
   console.log('create pick req.body ',req.body);
-  db.any('INSERT INTO pickups(user_id, type, notes) VALUES($1, $2, $3) RETURNING id', [parseInt(req.body.user_id), req.body.type, req.body.notes])
+  db.any('INSERT INTO pickups(user_id, type, zone, status, notes) VALUES($1, $2, $3, $4, $5) RETURNING id', [parseInt(req.body.user_id), req.body.type, parseInt(req.body.zone), req.body.status, req.body.notes])
       .then(data => {
         console.log('return data id', data);
         res.status(200)
@@ -139,9 +141,17 @@ function createUser(req, res, next) {
   var obj ={
     username: req.body.username,
     pin: parseInt(req.body.pin),
-    full_name: req.body.full_name
+    email: req.body.email,
+    full_name: req.body.full_name,
+    full_address: req.body.full_address,
+    street: req.body.street,
+    city: req.body.city,
+    state: req.body.state,
+    zip: req.body.zip,
+    zone: 1,
+    notes: req.body.notes
   };
-db.none('INSERT INTO users(username, pin, full_name) VALUES(${username}, ${pin}, ${full_name})', obj)
+db.one('INSERT INTO users(username, pin, email, full_name,full_address,street,city,state,zip, zone, notes) VALUES(${username}, ${pin}, ${email}, ${full_name}, ${full_address}, ${street}, ${city}, ${state},${zip},${zone},${notes})', obj)
     .then(function() {
       res.status(200)
         .json({
@@ -157,71 +167,49 @@ db.none('INSERT INTO users(username, pin, full_name) VALUES(${username}, ${pin},
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 
-// function createUser2(req, res, next) {
-//   const username = req.body.username;
-//   const password = req.body.password;
-//   const email = req.body.email;
-//   const full_name = req.body.full_name;
-//   const full_address = req.body.full_address;
-//   const street = req.body.street;
-//   const city = req.body.city;
-//   const state = req.body.state;
-//   const zip = req.body.zip;
-//   const zone = parseInt(req.body.zone);
-//   const pin = parseInt(req.body.pin);
-//   const lat = parseInt(req.body.lat);
-//   const long = parseInt(req.body.long);
-//   const notes = parseInt(req.body.notes);
-//
-//   db.none('insert into users(username, password, email, full_name, full_address, street, city, state, zip, zone, pin, lat, long, notes)' +
-//       'values(${username}, ${password}, ${email}, ${full_name}, ${full_address}, ${street}, ${city}, ${state},${zip},${zone},${pin},${lat},${long},${notes})',
-//     {username, password, email, full_name, full_address, street, city, state,zip,zone,pin,lat,long,notes})
-//     .then(function () {
-//       res.status(201)
-//         .json(data);
-//     })
-//     .catch(function (err) {
-//       return next(err);
-//     });
-// }
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
+// email=$2, pin=$3, full_name=$4, full_address=$5, street=$6, city=$7, state=$8, zone=$9, zip=$10, notes=$11
+
 
 function updateUser(req, res, next) {
-  console.log('updateUser ', req.body, req.params.id);
-  db.one('UPDATE users SET username=$1, email=$2, pin=$3, full_name=$4, full_address=$5, street=$6, city=$7, state=$8, zone=$9, zip=$10, notes=$11  WHERE id=$12',
-    [
-      req.body.username,
-      req.body.email,
-      parseInt(req.body.pin),
-      req.body.full_name,
-      req.body.full_address,
-      req.body.street,
-      req.body.city,
-      req.body.state,
-      parseInt(reg.body.zone),
-      req.body.zip,
-      req.body.notes,
-      parseInt(req.params.id)
-    ])
+  console.log('updateUser ', req.body, req.params.id, req.body.id);
+  var obj = {
+    id: parseInt(req.params.id),
+    username: req.body.username,
+    full_name: req.body.full_name,
+    full_address: req.body.full_address,
+    street:  req.body.street,
+    city:  req.body.city,
+    state:  req.body.state,
+    zone:  parseInt(req.body.zone),
+    zip:  req.body.zip,
+    notes:  req.body.notes
+  };
+  // console.log('obj ', obj);
+  db.any('update users set username=$1, full_name=$2 where id=$3 RETURNING id',[req.body.username,req.body.full_name, parseInt(req.params.id)])
     .then((data) => {
+      console.log('data ',data);
       res.status(200)
         .json(data);
     })
     .catch((error) => {
+      console.log(error);
       return next(error);
     });
 }
+// full_address=${full_address}, street=${street}, city=${city}, state=${state}, zone=${zone}, zip=${zip}, notes=${notes}
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
-
+// date_entered=$3, date_for_pickup=$4 req.body.date_entered, reg.body.date_for_pickup, req.body.date_entered,reg.body.date_for_pickup,
 function updatePickup(req, res, next) {
-  db.none('update pickups set user_id=$1, type=$2, date_entered=$3, date_for_pickup=$4, status=$5,company=$6, parseInt(req.body.zone)=$7,parseInt(julian_day_number=$8,year=$8,notes=$9,where id=$10',
-    [parseInt(req.body.user_id),req.body.type, req.body.date_entered,reg.body.date_for_pickup,reg.body.status,reg.body.company, parseInt(req.body.zone),parseInt(req.body.julian_day_number),
-      parseInt(req.body.year), req.body.notes,parseInt(req.params.id)])
-    .then(function () {
+  console.log('update pickup - be ', req.body + 'user id ' + req.body.user_id);
+  db.any('UPDATE pickups SET user_id=$1, type=$2, status=$3, zone=$4, notes=$5 WHERE id=$6 RETURNING id',[parseInt(req.body.user_id), req.body.type, req.body.status, parseInt(req.body.zone), req.body.notes, parseInt(req.params.id) ])
+    .then((data) => {
+      console.log('data ',data);
       res.status(200)
         .json(data);
     })
-    .catch(function (err) {
+    .catch((err) => {
+      console.log(err);
       return next(err);
     });
 }

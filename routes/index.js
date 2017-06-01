@@ -20,6 +20,8 @@ router.use(cors(corsOptions));
 
 router.options('*', cors(corsOptions)); // include before other routes
 
+console.log('cors',corsOptions);
+
 router.get('/api/users',db.getAllUsers);
 router.get('/api/pickups',db.getAllPickups);
 
