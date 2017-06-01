@@ -102,21 +102,7 @@ function getSingleUser(req, res, next) {
 
 
 // ******************************************** //
-// function createPickup(req, res, next) {
-//   console.log('create pick req.body ',req.body);
-// db.none('INSERT INTO pickups(user_id, type, notes) VALUES($1, $2, $3)', parseInt(req.body.user_id), req.body.type, req.body.notes)
-//     .then(function() {
-//         res.status(200)
-//           .json({
-//           status: 'success',
-//           message: 'inserted one pickup record'
-//         });
-//     })
-//     .catch(function (error) {
-//         // error;
-//         return next('create pickup error ', error);
-//     });
-// }
+
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function createPickup(req, res, next) {
   console.log('create pick req.body ',req.body);
@@ -202,11 +188,19 @@ function updateUser(req, res, next) {
 // date_entered=$3, date_for_pickup=$4 req.body.date_entered, reg.body.date_for_pickup, req.body.date_entered,reg.body.date_for_pickup,
 function updatePickup(req, res, next) {
   console.log('update pickup - be ', req.body + 'user id ' + req.body.user_id);
-  db.any('UPDATE pickups SET user_id=$1, type=$2, status=$3, zone=$4, notes=$5 WHERE id=$6 RETURNING id',[parseInt(req.body.user_id), req.body.type, req.body.status, parseInt(req.body.zone), req.body.notes, parseInt(req.params.id) ])
+  var obj = {
+    user_id: parseInt(req.body.user_id),
+    type: req.body.type,
+    status: req.body.status,
+    zone: parseInt(req.body.zone),
+    notes: req.body.notes,
+    id: parseInt(req.params.id)
+  };
+  db.any('UPDATE pickups SET user_id=${user_id}, type=${type}, status=${status}, notes=${notes} WHERE id=${id}',obj)
     .then((data) => {
-      console.log('data ',data);
+      // console.log('data ',obj); //status=${status}, zone=${zone}, notes=${notes}
       res.status(200)
-        .json(data);
+        .json(obj);
     })
     .catch((err) => {
       console.log(err);
