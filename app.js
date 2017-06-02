@@ -39,7 +39,7 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-    console.log('app.js' , err);
+    console.log('*** be app.js ***' , err);
     res.status( err.code || 998 ) // was 500
     .json({
       status: 'error development (app.js 44)',

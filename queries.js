@@ -124,21 +124,23 @@ function createPickup(req, res, next) {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@//
 function createUser(req, res, next) {
+  // var username = username.toLowerCase()
+  var full_address = 'tbd';
+  var username = req.body.username.toLowerCase();
   var obj ={
-    username: req.body.username,
+    username: username,
     pin: parseInt(req.body.pin),
     email: req.body.email,
     full_name: req.body.full_name,
-    full_address: req.body.full_address,
     street: req.body.street,
     city: req.body.city,
     state: req.body.state,
     zip: req.body.zip,
-    zone: 1,
-    notes: req.body.notes
+    zone: 1
   };
-db.one('INSERT INTO users(username, pin, email, full_name,full_address,street,city,state,zip, zone, notes) VALUES(${username}, ${pin}, ${email}, ${full_name}, ${full_address}, ${street}, ${city}, ${state},${zip},${zone},${notes})', obj)
-    .then(function() {
+  // console.log(obj);
+db.any('INSERT INTO users(username, pin, email, full_name,street,city,state,zip, zone) VALUES($1, $2, $3, $4, $5, $6,$7,$8,$9)',[username,parseInt(req.body.pin),req.body.email,req.body.full_name,req.body.street,req.body.city,req.body.state, req.body.zip, 1] )
+    .then(function(data) {
       res.status(200)
         .json({
         status: 'success',
@@ -147,7 +149,7 @@ db.one('INSERT INTO users(username, pin, email, full_name,full_address,street,ci
     })
     .catch(function (error) {
         // error;
-        return next('create user error',error);
+        return next('create user error (150)',error);
     });
   }
 
@@ -161,9 +163,9 @@ function updateUser(req, res, next) {
   console.log('updateUser ', req.body, req.params.id, req.body.id);
   var obj = {
     id: parseInt(req.params.id),
-    username: req.body.username,
+    username: req.body.username.toLowerCase(),
+    email: req.body.email,
     full_name: req.body.full_name,
-    full_address: req.body.full_address,
     street:  req.body.street,
     city:  req.body.city,
     state:  req.body.state,
@@ -172,7 +174,18 @@ function updateUser(req, res, next) {
     notes:  req.body.notes
   };
   // console.log('obj ', obj);
-  db.any('update users set username=$1, full_name=$2 where id=$3 RETURNING id',[req.body.username,req.body.full_name, parseInt(req.params.id)])
+  db.any('update users set username=$1, email=$2, full_name=$3, street=$4,city=$5, state=$6, zone=$7, zip=$8, notes=$9 where id=$10 RETURNING id',
+  [req.body.username,
+    req.body.email,
+    req.body.full_name,
+    req.body.full_address,
+    req.body.street,
+    req.body.city,
+    req.body.state,
+    parseInt(req.body.zone),
+    req.body.zip,
+    req.body.notes,
+    parseInt(req.params.id)])
     .then((data) => {
       console.log('data ',data);
       res.status(200)
