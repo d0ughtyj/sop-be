@@ -175,10 +175,9 @@ function updateUser(req, res, next) {
   };
   // console.log('obj ', obj);
   db.any('update users set username=$1, email=$2, full_name=$3, street=$4,city=$5, state=$6, zone=$7, zip=$8, notes=$9 where id=$10 RETURNING id',
-  [req.body.username,
+  [req.body.username.toLowerCase(),
     req.body.email,
     req.body.full_name,
-    req.body.full_address,
     req.body.street,
     req.body.city,
     req.body.state,
